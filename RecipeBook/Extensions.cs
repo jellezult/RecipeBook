@@ -1,7 +1,7 @@
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace RecipeBook.ViewModels;
+namespace RecipeBook;
 
 public static class Extensions
 {

@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace RecipeBook.Models;
+namespace RecipeBook;
 
 public abstract class NotifyObject : INotifyPropertyChanged
 {

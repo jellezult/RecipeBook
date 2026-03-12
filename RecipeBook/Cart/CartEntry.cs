@@ -1,4 +1,6 @@
-namespace RecipeBook.Models;
+using RecipeBook.Recipes;
+
+namespace RecipeBook.Cart;
 
 public class CartEntry : NotifyObject
 {

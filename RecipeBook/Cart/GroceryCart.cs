@@ -1,6 +1,7 @@
 using DynamicData;
+using RecipeBook.Recipes;
 
-namespace RecipeBook.Models;
+namespace RecipeBook.Cart;
 
 public class GroceryCart
 {

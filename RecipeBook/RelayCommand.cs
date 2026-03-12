@@ -1,6 +1,6 @@
 using System.Windows.Input;
 
-namespace RecipeBook.ViewModels;
+namespace RecipeBook;
 
 public class RelayCommand : ICommand
 {

@@ -1,7 +1,7 @@
 using System.Windows;
-using RecipeBook.Models;
-using RecipeBook.ViewModels;
-using RecipeBookModel = RecipeBook.Models.RecipeBook;
+using RecipeBook.Cart;
+using RecipeBook.Recipes;
+using RecipeBookModel = RecipeBook.Recipes.RecipeBook;
 
 namespace RecipeBook;
 

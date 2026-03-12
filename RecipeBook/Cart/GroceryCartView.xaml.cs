@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace RecipeBook.Views;
+namespace RecipeBook.Cart;
 
 public partial class GroceryCartView : UserControl
 {

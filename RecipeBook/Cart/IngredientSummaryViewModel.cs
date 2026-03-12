@@ -1,4 +1,4 @@
-namespace RecipeBook.ViewModels;
+namespace RecipeBook.Cart;
 
 public class IngredientSummaryViewModel
 {

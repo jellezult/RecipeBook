@@ -1,10 +1,9 @@
 using DynamicData;
-using RecipeBook.Models;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace RecipeBook.ViewModels;
+namespace RecipeBook.Recipes;
 
 public class RecipeViewModel : NotifyObject, IDisposable
 {

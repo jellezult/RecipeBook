@@ -1,7 +1,7 @@
-using RecipeBook.Models;
+using RecipeBook.Recipes;
 using System.Reactive.Disposables;
 
-namespace RecipeBook.ViewModels;
+namespace RecipeBook.Cart;
 
 public class CartEntryViewModel : NotifyObject, IDisposable
 {

@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace RecipeBook.Views;
+namespace RecipeBook.Recipes;
 
 public partial class RecipeBookView : UserControl
 {

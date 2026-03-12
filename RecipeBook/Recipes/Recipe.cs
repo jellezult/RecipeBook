@@ -1,6 +1,6 @@
 using DynamicData;
 
-namespace RecipeBook.Models;
+namespace RecipeBook.Recipes;
 
 public class Recipe
 {

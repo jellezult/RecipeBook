@@ -1,4 +1,4 @@
-namespace RecipeBook.Models;
+namespace RecipeBook.Recipes;
 
 public enum Ingredient
 {

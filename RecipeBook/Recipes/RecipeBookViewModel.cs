@@ -1,15 +1,15 @@
 using DynamicData;
-using RecipeBook.Models;
+using RecipeBook.Cart;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace RecipeBook.ViewModels;
+namespace RecipeBook.Recipes;
 
 public class RecipeBookViewModel : NotifyObject, IDisposable
 {
     private readonly CompositeDisposable disposables = new();
-    private readonly Models.RecipeBook recipeBook;
+    private readonly RecipeBook recipeBook;
     private readonly GroceryCart groceryCart;
 
     private readonly ReadOnlyObservableCollection<RecipeViewModel> recipes;
@@ -20,7 +20,7 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
     private RelayCommand<RecipeViewModel>? removeRecipeCommand;
     private RelayCommand<RecipeViewModel>? addToCartCommand;
 
-    public RecipeBookViewModel(Models.RecipeBook recipeBook, GroceryCart groceryCart)
+    public RecipeBookViewModel(RecipeBook recipeBook, GroceryCart groceryCart)
     {
         this.recipeBook = recipeBook;
         this.groceryCart = groceryCart;
