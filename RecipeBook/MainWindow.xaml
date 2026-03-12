@@ -1,0 +1,25 @@
+<Window x:Class="RecipeBook.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:RecipeBook.Views"
+        Title="Recipe Book — MVVM + Rx.NET + Dynamic Data"
+        Height="680" Width="1100"
+        MinHeight="500" MinWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="350"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*" MinWidth="350"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+            <views:RecipeBookView x:Name="RecipeBookView"/>
+        </Border>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#DDDDDD"/>
+
+        <Border Grid.Column="2" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+            <views:GroceryCartView x:Name="GroceryCartView"/>
+        </Border>
+    </Grid>
+</Window>
