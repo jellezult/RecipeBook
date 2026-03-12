@@ -10,6 +10,7 @@ namespace RecipeBook.ViewModels;
 public class GroceryCartViewModel : NotifyObject, IDisposable
 {
     private readonly CompositeDisposable disposables = new();
+    private readonly GroceryCart cart;
 
     private ReadOnlyObservableCollection<CartEntryViewModel> cartEntries = null!;
     private List<IngredientSummaryViewModel> aggregatedIngredients = new();
@@ -24,6 +25,8 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
 
     public GroceryCartViewModel(GroceryCart cart)
     {
+        this.cart = cart;
+
         // Transform SourceCache<CartEntry,Guid> -> ReadOnlyObservableCollection<CartEntryViewModel>
         cart.ObserveEntries()
             .Transform(entry => new CartEntryViewModel(entry, cart))
@@ -56,10 +59,10 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
 
     private void RecomputeAggregation()
     {
-        // For each cart entry, expand its recipe's ingredients weighted by count
-        var summary = this.cartEntries
-            .SelectMany(vm => vm.GetModel().Recipe.IngredientsSnapshot
-                .Select(ingredient => (ingredient, vm.GetModel().Count)))
+        // Read directly from the model — this.cartEntries lags behind due to dispatcher scheduling
+        var summary = this.cart.CurrentEntries
+            .SelectMany(entry => entry.Recipe.IngredientsSnapshot
+                .Select(ingredient => (ingredient, entry.Count)))
             .GroupBy(x => x.ingredient)
             .Select(g => new IngredientSummaryViewModel(
                 g.Key.ToString(),

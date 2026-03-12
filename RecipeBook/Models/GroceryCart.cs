@@ -7,6 +7,7 @@ public class GroceryCart
     private readonly SourceCache<CartEntry, Guid> entries = new(e => e.Id);
 
     public IObservable<IChangeSet<CartEntry, Guid>> ObserveEntries() => this.entries.Connect();
+    public IEnumerable<CartEntry> CurrentEntries => this.entries.Items;
 
     public void AddOrIncrement(Recipe recipe)
     {
