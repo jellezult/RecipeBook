@@ -16,6 +16,10 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
     private RecipeViewModel? selectedRecipe;
     private string newRecipeName = string.Empty;
 
+    private RelayCommand? addRecipeCommand;
+    private RelayCommand<RecipeViewModel>? removeRecipeCommand;
+    private RelayCommand<RecipeViewModel>? addToCartCommand;
+
     public ReadOnlyObservableCollection<RecipeViewModel> Recipes => this.recipes;
 
     public RecipeViewModel? SelectedRecipe
@@ -30,16 +34,8 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
         set => Set(ref this.newRecipeName, value);
     }
 
-    public RelayCommand AddRecipeCommand { get; }
-    public RelayCommand<RecipeViewModel> RemoveRecipeCommand { get; }
-    public RelayCommand<RecipeViewModel> AddToCartCommand { get; }
-
-    public RecipeBookViewModel(Models.RecipeBook recipeBook, GroceryCart groceryCart)
-    {
-        this.recipeBook = recipeBook;
-        this.groceryCart = groceryCart;
-
-        AddRecipeCommand = new RelayCommand(
+    public RelayCommand AddRecipeCommand =>
+        this.addRecipeCommand ??= new RelayCommand(
             () =>
             {
                 this.recipeBook.AddRecipe(this.newRecipeName);
@@ -47,20 +43,28 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
             },
             () => !string.IsNullOrWhiteSpace(this.newRecipeName));
 
-        RemoveRecipeCommand = new RelayCommand<RecipeViewModel>(
+    public RelayCommand<RecipeViewModel> RemoveRecipeCommand =>
+        this.removeRecipeCommand ??= new RelayCommand<RecipeViewModel>(
             vm => this.recipeBook.RemoveRecipe(vm.GetModel()));
 
-        AddToCartCommand = new RelayCommand<RecipeViewModel>(
+    public RelayCommand<RecipeViewModel> AddToCartCommand =>
+        this.addToCartCommand ??= new RelayCommand<RecipeViewModel>(
             vm => this.groceryCart.AddOrIncrement(vm.GetModel()));
+
+    public RecipeBookViewModel(Models.RecipeBook recipeBook, GroceryCart groceryCart)
+    {
+        this.recipeBook = recipeBook;
+        this.groceryCart = groceryCart;
 
         // Transform SourceList<Recipe> -> ReadOnlyObservableCollection<RecipeViewModel>
         // .DisposeMany() ensures RecipeViewModels are disposed when recipes are removed
-        this.disposables.Add(
-            recipeBook.RecipesChanges
-                .Transform(r => new RecipeViewModel(r))
-                .Bind(out this.recipes)
-                .DisposeMany()
-                .Subscribe());
+        recipeBook.ObserveRecipes()
+            .Transform(r => new RecipeViewModel(r))
+            .ObserveOnDispatcher()
+            .Bind(out this.recipes)
+            .DisposeMany()
+            .Subscribe()
+            .DisposeWith(this.disposables);
     }
 
     public void Dispose() => this.disposables.Dispose();

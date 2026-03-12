@@ -2,12 +2,11 @@ using DynamicData;
 
 namespace RecipeBook.Models;
 
-public class GroceryCart : IDisposable
+public class GroceryCart
 {
     private readonly SourceCache<CartEntry, Guid> entries = new(e => e.Id);
 
-    public IObservable<IChangeSet<CartEntry, Guid>> EntriesChanges => this.entries.Connect();
-    public IEnumerable<CartEntry> CurrentEntries => this.entries.Items;
+    public IObservable<IChangeSet<CartEntry, Guid>> ObserveEntries() => this.entries.Connect();
 
     public void AddOrIncrement(Recipe recipe)
     {
@@ -29,13 +28,5 @@ public class GroceryCart : IDisposable
     public void Remove(CartEntry entry)
     {
         this.entries.Remove(entry);
-        entry.Dispose();
-    }
-
-    public void Dispose()
-    {
-        foreach (var entry in this.entries.Items.ToList())
-            entry.Dispose();
-        this.entries.Dispose();
     }
 }

@@ -9,7 +9,7 @@ public class Recipe
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; }
 
-    public IObservable<IChangeSet<Ingredient>> IngredientsChanges => this.ingredients.Connect();
+    public IObservable<IChangeSet<Ingredient>> ObserveIngredients() => this.ingredients.Connect();
     public IReadOnlyList<Ingredient> IngredientsSnapshot => this.ingredients.Items.ToList();
 
     public Recipe(string name)

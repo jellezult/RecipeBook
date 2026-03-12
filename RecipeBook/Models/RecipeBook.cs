@@ -6,7 +6,7 @@ public class RecipeBook
 {
     private readonly SourceList<Recipe> recipes = new();
 
-    public IObservable<IChangeSet<Recipe>> RecipesChanges => this.recipes.Connect();
+    public IObservable<IChangeSet<Recipe>> ObserveRecipes() => this.recipes.Connect();
 
     public RecipeBook()
     {

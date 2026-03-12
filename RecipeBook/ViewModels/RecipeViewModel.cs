@@ -17,6 +17,9 @@ public class RecipeViewModel : NotifyObject, IDisposable
     private ReadOnlyObservableCollection<Ingredient> ingredients = null!;
     private Ingredient? selectedIngredientToAdd;
 
+    private RelayCommand? addIngredientCommand;
+    private RelayCommand<Ingredient>? removeIngredientCommand;
+
     public Guid Id => this.recipe.Id;
     public string Name => this.recipe.Name;
 
@@ -31,14 +34,8 @@ public class RecipeViewModel : NotifyObject, IDisposable
         set => Set(ref this.selectedIngredientToAdd, value);
     }
 
-    public RelayCommand AddIngredientCommand { get; }
-    public RelayCommand<Ingredient> RemoveIngredientCommand { get; }
-
-    public RecipeViewModel(Recipe recipe)
-    {
-        this.recipe = recipe;
-
-        AddIngredientCommand = new RelayCommand(
+    public RelayCommand AddIngredientCommand =>
+        this.addIngredientCommand ??= new RelayCommand(
             () =>
             {
                 if (this.selectedIngredientToAdd.HasValue)
@@ -49,17 +46,20 @@ public class RecipeViewModel : NotifyObject, IDisposable
             },
             () => this.selectedIngredientToAdd.HasValue);
 
-        RemoveIngredientCommand = new RelayCommand<Ingredient>(
+    public RelayCommand<Ingredient> RemoveIngredientCommand =>
+        this.removeIngredientCommand ??= new RelayCommand<Ingredient>(
             ingredient => this.recipe.RemoveIngredient(ingredient));
 
-        // Bind ingredients list and notify AvailableIngredients whenever it changes.
-        // All mutations happen on the UI thread (commands), so no ObserveOn is needed here.
-        // In a multi-threaded scenario, add .ObserveOn(DispatcherScheduler.Current) before .Bind().
-        this.disposables.Add(
-            recipe.IngredientsChanges
-                .Bind(out this.ingredients)
-                .Do(_ => OnPropertyChanged(nameof(AvailableIngredients)))
-                .Subscribe());
+    public RecipeViewModel(Recipe recipe)
+    {
+        this.recipe = recipe;
+
+        recipe.ObserveIngredients()
+            .ObserveOnDispatcher()
+            .Bind(out this.ingredients)
+            .Do(_ => OnPropertyChanged(nameof(AvailableIngredients)))
+            .Subscribe()
+            .DisposeWith(this.disposables);
     }
 
     public Recipe GetModel() => this.recipe;

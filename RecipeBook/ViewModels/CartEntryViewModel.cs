@@ -12,6 +12,10 @@ public class CartEntryViewModel : NotifyObject, IDisposable
 
     private int count;
 
+    private RelayCommand? incrementCommand;
+    private RelayCommand? decrementCommand;
+    private RelayCommand? removeCommand;
+
     public string RecipeName => this.entry.Recipe.Name;
     public Guid Id => this.entry.Id;
 
@@ -21,9 +25,14 @@ public class CartEntryViewModel : NotifyObject, IDisposable
         private set => Set(ref this.count, value);
     }
 
-    public RelayCommand IncrementCommand { get; }
-    public RelayCommand DecrementCommand { get; }
-    public RelayCommand RemoveCommand { get; }
+    public RelayCommand IncrementCommand =>
+        this.incrementCommand ??= new RelayCommand(() => this.cart.AddOrIncrement(this.entry.Recipe));
+
+    public RelayCommand DecrementCommand =>
+        this.decrementCommand ??= new RelayCommand(() => this.cart.Decrement(this.entry));
+
+    public RelayCommand RemoveCommand =>
+        this.removeCommand ??= new RelayCommand(() => this.cart.Remove(this.entry));
 
     public CartEntryViewModel(CartEntry entry, GroceryCart cart)
     {
@@ -31,14 +40,10 @@ public class CartEntryViewModel : NotifyObject, IDisposable
         this.cart = cart;
         this.count = entry.Count;
 
-        IncrementCommand = new RelayCommand(() => this.cart.AddOrIncrement(this.entry.Recipe));
-        DecrementCommand = new RelayCommand(() => this.cart.Decrement(this.entry));
-        RemoveCommand = new RelayCommand(() => this.cart.Remove(this.entry));
-
         // Sync Count property whenever the model's count changes
-        this.disposables.Add(
-            entry.CountChanged
-                .Subscribe(c => Count = c));
+        entry.ObserveCount()
+            .Subscribe(c => Count = c)
+            .DisposeWith(this.disposables);
     }
 
     public CartEntry GetModel() => this.entry;

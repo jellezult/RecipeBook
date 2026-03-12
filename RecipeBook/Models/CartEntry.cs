@@ -2,7 +2,7 @@ using System.Reactive.Subjects;
 
 namespace RecipeBook.Models;
 
-public class CartEntry : IDisposable
+public class CartEntry
 {
     private readonly Subject<int> countSubject = new();
     private int count = 1;
@@ -20,16 +20,10 @@ public class CartEntry : IDisposable
         }
     }
 
-    public IObservable<int> CountChanged => this.countSubject;
+    public IObservable<int> ObserveCount() => this.countSubject;
 
     public CartEntry(Recipe recipe)
     {
         this.Recipe = recipe;
-    }
-
-    public void Dispose()
-    {
-        this.countSubject.OnCompleted();
-        this.countSubject.Dispose();
     }
 }
