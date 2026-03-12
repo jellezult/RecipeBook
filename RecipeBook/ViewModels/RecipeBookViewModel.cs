@@ -1,8 +1,8 @@
+using DynamicData;
+using RecipeBook.Models;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using RecipeBook.Models;
 
 namespace RecipeBook.ViewModels;
 
@@ -12,44 +12,13 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
     private readonly Models.RecipeBook recipeBook;
     private readonly GroceryCart groceryCart;
 
-    private ReadOnlyObservableCollection<RecipeViewModel> recipes = null!;
+    private readonly ReadOnlyObservableCollection<RecipeViewModel> recipes;
     private RecipeViewModel? selectedRecipe;
     private string newRecipeName = string.Empty;
 
     private RelayCommand? addRecipeCommand;
     private RelayCommand<RecipeViewModel>? removeRecipeCommand;
     private RelayCommand<RecipeViewModel>? addToCartCommand;
-
-    public ReadOnlyObservableCollection<RecipeViewModel> Recipes => this.recipes;
-
-    public RecipeViewModel? SelectedRecipe
-    {
-        get => this.selectedRecipe;
-        set => Set(ref this.selectedRecipe, value);
-    }
-
-    public string NewRecipeName
-    {
-        get => this.newRecipeName;
-        set => Set(ref this.newRecipeName, value);
-    }
-
-    public RelayCommand AddRecipeCommand =>
-        this.addRecipeCommand ??= new RelayCommand(
-            () =>
-            {
-                this.recipeBook.AddRecipe(this.newRecipeName);
-                NewRecipeName = string.Empty;
-            },
-            () => !string.IsNullOrWhiteSpace(this.newRecipeName));
-
-    public RelayCommand<RecipeViewModel> RemoveRecipeCommand =>
-        this.removeRecipeCommand ??= new RelayCommand<RecipeViewModel>(
-            vm => this.recipeBook.RemoveRecipe(vm.GetModel()));
-
-    public RelayCommand<RecipeViewModel> AddToCartCommand =>
-        this.addToCartCommand ??= new RelayCommand<RecipeViewModel>(
-            vm => this.groceryCart.AddOrIncrement(vm.GetModel()));
 
     public RecipeBookViewModel(Models.RecipeBook recipeBook, GroceryCart groceryCart)
     {
@@ -61,11 +30,42 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
         recipeBook.ObserveRecipes()
             .Transform(r => new RecipeViewModel(r))
             .ObserveOnDispatcher()
-            .Bind(out this.recipes)
+            .Bind(out recipes)
             .DisposeMany()
             .Subscribe()
-            .DisposeWith(this.disposables);
+            .DisposeWith(disposables);
     }
 
-    public void Dispose() => this.disposables.Dispose();
+    public ReadOnlyObservableCollection<RecipeViewModel> Recipes => recipes;
+
+    public RecipeViewModel? SelectedRecipe
+    {
+        get => selectedRecipe;
+        set => Set(ref selectedRecipe, value);
+    }
+
+    public string NewRecipeName
+    {
+        get => newRecipeName;
+        set => Set(ref newRecipeName, value);
+    }
+
+    public RelayCommand AddRecipeCommand =>
+        addRecipeCommand ??= new RelayCommand(
+            () =>
+            {
+                recipeBook.AddRecipe(newRecipeName);
+                NewRecipeName = string.Empty;
+            },
+            () => !string.IsNullOrWhiteSpace(newRecipeName));
+
+    public RelayCommand<RecipeViewModel> RemoveRecipeCommand =>
+        removeRecipeCommand ??= new RelayCommand<RecipeViewModel>(
+            vm => recipeBook.RemoveRecipe(vm.Recipe));
+
+    public RelayCommand<RecipeViewModel> AddToCartCommand =>
+        addToCartCommand ??= new RelayCommand<RecipeViewModel>(
+            vm => groceryCart.AddOrIncrement(vm.Recipe));
+
+    public void Dispose() => disposables.Dispose();
 }

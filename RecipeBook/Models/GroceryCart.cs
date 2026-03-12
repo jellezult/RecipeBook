@@ -6,16 +6,17 @@ public class GroceryCart
 {
     private readonly SourceCache<CartEntry, Guid> entries = new(e => e.Id);
 
-    public IObservable<IChangeSet<CartEntry, Guid>> ObserveEntries() => this.entries.Connect();
-    public IEnumerable<CartEntry> CurrentEntries => this.entries.Items;
+    public IObservable<IChangeSet<CartEntry, Guid>> ObserveEntries() => entries.Connect();
+
+    public IEnumerable<CartEntry> CurrentEntries => entries.Items;
 
     public void AddOrIncrement(Recipe recipe)
     {
-        var existing = this.entries.Lookup(recipe.Id);
+        var existing = entries.Lookup(recipe.Id);
         if (existing.HasValue)
             existing.Value.Count++;
         else
-            this.entries.AddOrUpdate(new CartEntry(recipe));
+            entries.AddOrUpdate(new CartEntry(recipe));
     }
 
     public void Decrement(CartEntry entry)
@@ -28,6 +29,6 @@ public class GroceryCart
 
     public void Remove(CartEntry entry)
     {
-        this.entries.Remove(entry);
+        entries.Remove(entry);
     }
 }

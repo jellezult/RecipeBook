@@ -1,8 +1,8 @@
+using DynamicData;
+using RecipeBook.Models;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using RecipeBook.Models;
 
 namespace RecipeBook.ViewModels;
 
@@ -20,35 +20,19 @@ public class RecipeViewModel : NotifyObject, IDisposable
     private RelayCommand? addIngredientCommand;
     private RelayCommand<Ingredient>? removeIngredientCommand;
 
-    public Guid Id => this.recipe.Id;
-    public string Name => this.recipe.Name;
+    public Guid Id => recipe.Id;
+    public string Name => recipe.Name;
 
-    public ReadOnlyObservableCollection<Ingredient> Ingredients => this.ingredients;
+    public ReadOnlyObservableCollection<Ingredient> Ingredients => ingredients;
 
     public IEnumerable<Ingredient> AvailableIngredients =>
-        AllIngredients.Where(i => !this.ingredients.Contains(i)).ToList();
+        AllIngredients.Where(i => !ingredients.Contains(i)).ToList();
 
     public Ingredient? SelectedIngredientToAdd
     {
-        get => this.selectedIngredientToAdd;
-        set => Set(ref this.selectedIngredientToAdd, value);
+        get => selectedIngredientToAdd;
+        set => Set(ref selectedIngredientToAdd, value);
     }
-
-    public RelayCommand AddIngredientCommand =>
-        this.addIngredientCommand ??= new RelayCommand(
-            () =>
-            {
-                if (this.selectedIngredientToAdd.HasValue)
-                {
-                    this.recipe.AddIngredient(this.selectedIngredientToAdd.Value);
-                    SelectedIngredientToAdd = null;
-                }
-            },
-            () => this.selectedIngredientToAdd.HasValue);
-
-    public RelayCommand<Ingredient> RemoveIngredientCommand =>
-        this.removeIngredientCommand ??= new RelayCommand<Ingredient>(
-            ingredient => this.recipe.RemoveIngredient(ingredient));
 
     public RecipeViewModel(Recipe recipe)
     {
@@ -56,13 +40,29 @@ public class RecipeViewModel : NotifyObject, IDisposable
 
         recipe.ObserveIngredients()
             .ObserveOnDispatcher()
-            .Bind(out this.ingredients)
+            .Bind(out ingredients)
             .Do(_ => OnPropertyChanged(nameof(AvailableIngredients)))
             .Subscribe()
-            .DisposeWith(this.disposables);
+            .DisposeWith(disposables);
     }
 
-    public Recipe GetModel() => this.recipe;
+    public RelayCommand AddIngredientCommand =>
+        addIngredientCommand ??= new RelayCommand(
+            () =>
+            {
+                if (selectedIngredientToAdd.HasValue)
+                {
+                    recipe.AddIngredient(selectedIngredientToAdd.Value);
+                    SelectedIngredientToAdd = null;
+                }
+            },
+            () => selectedIngredientToAdd.HasValue);
 
-    public void Dispose() => this.disposables.Dispose();
+    public RelayCommand<Ingredient> RemoveIngredientCommand =>
+        removeIngredientCommand ??= new RelayCommand<Ingredient>(
+            ingredient => recipe.RemoveIngredient(ingredient));
+
+    public Recipe Recipe => recipe;
+
+    public void Dispose() => disposables.Dispose();
 }

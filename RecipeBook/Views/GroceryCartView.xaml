@@ -35,14 +35,14 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Column="0"
-                                       Text="{Binding RecipeName}"
+                                       Text="{Binding Recipe.Name}"
                                        VerticalAlignment="Center"
                                        TextTrimming="CharacterEllipsis"
                                        Margin="2,0"/>
 
                             <!-- Count display -->
                             <TextBlock Grid.Column="1"
-                                       Text="{Binding Count, StringFormat='×{0}'}"
+                                       Text="{Binding Entry.Count, StringFormat='×{0}'}"
                                        VerticalAlignment="Center"
                                        HorizontalAlignment="Center"
                                        FontWeight="SemiBold"/>
@@ -84,7 +84,7 @@
                        FontWeight="Bold" FontSize="15"
                        Margin="6,6,6,4"/>
 
-            <ListBox ItemsSource="{Binding AggregatedIngredients}"
+            <ListBox ItemsSource="{Binding IngredientsSummary}"
                      HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>

@@ -1,9 +1,9 @@
+using DynamicData;
+using RecipeBook.Models;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using DynamicData;
-using RecipeBook.Models;
 
 namespace RecipeBook.ViewModels;
 
@@ -12,16 +12,8 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
     private readonly CompositeDisposable disposables = new();
     private readonly GroceryCart cart;
 
-    private ReadOnlyObservableCollection<CartEntryViewModel> cartEntries = null!;
-    private List<IngredientSummaryViewModel> aggregatedIngredients = new();
-
-    public ReadOnlyObservableCollection<CartEntryViewModel> CartEntries => this.cartEntries;
-
-    public List<IngredientSummaryViewModel> AggregatedIngredients
-    {
-        get => this.aggregatedIngredients;
-        private set => Set(ref this.aggregatedIngredients, value);
-    }
+    private readonly ReadOnlyObservableCollection<CartEntryViewModel> cartEntries;
+    private IngredientSummaryViewModel[] ingredientsSummary = [];
 
     public GroceryCartViewModel(GroceryCart cart)
     {
@@ -31,35 +23,44 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
         cart.ObserveEntries()
             .Transform(entry => new CartEntryViewModel(entry, cart))
             .ObserveOnDispatcher()
-            .Bind(out this.cartEntries)
+            .Bind(out cartEntries)
             .DisposeMany()
             .Subscribe()
-            .DisposeWith(this.disposables);
+            .DisposeWith(disposables);
 
         // Recompute when cart entries are added or removed
         cart.ObserveEntries()
-            .Subscribe(_ => RecomputeAggregation())
-            .DisposeWith(this.disposables);
+            .Subscribe(_ => RecomputeIngredientsSummary())
+            .DisposeWith(disposables);
 
-        // MergeMany: dynamically subscribes/unsubscribes to each entry's ObserveCount()
-        // as entries enter and leave the SourceCache.
-        // Triggers reaggregation whenever any cart entry's count changes.
+        // Recompute when any cart entry's count changes.
         cart.ObserveEntries()
-            .MergeMany(entry => entry.ObserveCount().Select(_ => Unit.Default))
-            .Subscribe(_ => RecomputeAggregation())
-            .DisposeWith(this.disposables);
+            .WhenPropertyChanged(entry => entry.Count)
+            .Subscribe(_ => RecomputeIngredientsSummary())
+            .DisposeWith(disposables);
 
+        // MergeMany: dynamically subscribes/unsubscribes to each recipes's ObserveIngredients
+        // as entries enter and leave the SourceCache.
         // Skip(1) skips the initial state replay from Connect() — we only want actual changes.
         cart.ObserveEntries()
             .MergeMany(entry => entry.Recipe.ObserveIngredients().Skip(1).Select(_ => Unit.Default))
-            .Subscribe(_ => RecomputeAggregation())
-            .DisposeWith(this.disposables);
+            .Subscribe(_ => RecomputeIngredientsSummary())
+            .DisposeWith(disposables);
     }
 
-    private void RecomputeAggregation()
+    public ReadOnlyObservableCollection<CartEntryViewModel> CartEntries => cartEntries;
+
+    public IngredientSummaryViewModel[] IngredientsSummary
     {
-        // Read directly from the model — this.cartEntries lags behind due to dispatcher scheduling
-        var summary = this.cart.CurrentEntries
+        get => ingredientsSummary;
+        private set => Set(ref ingredientsSummary, value);
+    }
+
+    public void Dispose() => disposables.Dispose();
+
+    private void RecomputeIngredientsSummary()
+    {
+        var summary = cart.CurrentEntries
             .SelectMany(entry => entry.Recipe.IngredientsSnapshot
                 .Select(ingredient => (ingredient, entry.Count)))
             .GroupBy(x => x.ingredient)
@@ -67,10 +68,8 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
                 g.Key.ToString(),
                 g.Sum(x => x.Count)))
             .OrderBy(s => s.IngredientName)
-            .ToList();
+            .ToArray();
 
-        AggregatedIngredients = summary;
+        IngredientsSummary = summary;
     }
-
-    public void Dispose() => this.disposables.Dispose();
 }
