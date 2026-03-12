@@ -49,7 +49,6 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
             .Subscribe(_ => RecomputeAggregation())
             .DisposeWith(this.disposables);
 
-        // Bug fix: also recompute when any cart recipe's ingredients change.
         // Skip(1) skips the initial state replay from Connect() — we only want actual changes.
         cart.ObserveEntries()
             .MergeMany(entry => entry.Recipe.ObserveIngredients().Skip(1).Select(_ => Unit.Default))
