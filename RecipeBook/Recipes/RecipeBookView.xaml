@@ -87,7 +87,7 @@
                    Visibility="{Binding SelectedRecipe, Converter={StaticResource NullToVisibilityConverter}}">
 
             <TextBlock DockPanel.Dock="Top"
-                       Text="{Binding SelectedRecipe.Name}"
+                       Text="{Binding SelectedRecipe.Recipe.Name}"
                        FontWeight="Bold" FontSize="16"
                        Margin="8,8,8,4"/>
 

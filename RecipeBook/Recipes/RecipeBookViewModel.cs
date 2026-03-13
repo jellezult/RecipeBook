@@ -55,10 +55,14 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
     public string NewRecipeName
     {
         get => newRecipeName;
-        set => Set(ref newRecipeName, value);
+        set
+        {
+            Set(ref newRecipeName, value);
+            AddRecipeCommand.NotifyCanExecuteChanged();
+        }
     }
 
-    private bool CanAddRecipe() => !string.IsNullOrWhiteSpace(newRecipeName);
+    private bool CanAddRecipe() => !string.IsNullOrWhiteSpace(NewRecipeName);
 
     private void AddRecipe()
     {

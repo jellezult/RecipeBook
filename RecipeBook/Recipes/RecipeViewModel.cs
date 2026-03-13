@@ -45,12 +45,16 @@ public class RecipeViewModel : NotifyObject, IDisposable
     public Ingredient? SelectedIngredientToAdd
     {
         get => selectedIngredientToAdd;
-        set => Set(ref selectedIngredientToAdd, value);
+        set
+        {
+            Set(ref selectedIngredientToAdd, value);
+            AddIngredientCommand.NotifyCanExecuteChanged();
+        }
     }
 
     public void Dispose() => disposables.Dispose();
 
-    private bool CanAddIngredient() => selectedIngredientToAdd.HasValue;
+    private bool CanAddIngredient() => SelectedIngredientToAdd.HasValue;
 
     private void AddIngredient()
     {
