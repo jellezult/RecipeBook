@@ -84,11 +84,11 @@
                        FontWeight="Bold" FontSize="15"
                        Margin="6,6,6,4"/>
 
-            <ListBox ItemsSource="{Binding IngredientsSummary}"
+            <ListBox ItemsSource="{Binding IngredientCounts}"
                      HorizontalContentAlignment="Stretch"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type vm:IngredientSummaryViewModel}">
+                    <DataTemplate DataType="{x:Type vm:IngredientCountViewModel}">
                         <Grid Margin="2,2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>

@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using RecipeBook.Common;
 using System.Collections.ObjectModel;
@@ -8,31 +9,16 @@ namespace RecipeBook.Recipes;
 
 public class RecipeViewModel : NotifyObject, IDisposable
 {
-    private static readonly IReadOnlyList<Ingredient> AllIngredients =
-        Enum.GetValues<Ingredient>().ToList();
+    private static readonly IReadOnlyList<Ingredient> AllIngredients = Enum.GetValues<Ingredient>().ToList();
 
     private readonly CompositeDisposable disposables = new();
     private readonly Recipe recipe;
+    private readonly ReadOnlyObservableCollection<Ingredient> ingredients;
 
-    private ReadOnlyObservableCollection<Ingredient> ingredients = null!;
     private Ingredient? selectedIngredientToAdd;
 
     private RelayCommand? addIngredientCommand;
     private RelayCommand<Ingredient>? removeIngredientCommand;
-
-    public Guid Id => recipe.Id;
-    public string Name => recipe.Name;
-
-    public ReadOnlyObservableCollection<Ingredient> Ingredients => ingredients;
-
-    public IEnumerable<Ingredient> AvailableIngredients =>
-        AllIngredients.Where(i => !ingredients.Contains(i)).ToList();
-
-    public Ingredient? SelectedIngredientToAdd
-    {
-        get => selectedIngredientToAdd;
-        set => Set(ref selectedIngredientToAdd, value);
-    }
 
     public RecipeViewModel(Recipe recipe)
     {
@@ -46,23 +32,37 @@ public class RecipeViewModel : NotifyObject, IDisposable
             .DisposeWith(disposables);
     }
 
-    public RelayCommand AddIngredientCommand =>
-        addIngredientCommand ??= new RelayCommand(
-            () =>
-            {
-                if (selectedIngredientToAdd.HasValue)
-                {
-                    recipe.AddIngredient(selectedIngredientToAdd.Value);
-                    SelectedIngredientToAdd = null;
-                }
-            },
-            () => selectedIngredientToAdd.HasValue);
+    public RelayCommand AddIngredientCommand => addIngredientCommand ??= new(AddIngredient, CanAddIngredient);
 
-    public RelayCommand<Ingredient> RemoveIngredientCommand =>
-        removeIngredientCommand ??= new RelayCommand<Ingredient>(
-            ingredient => recipe.RemoveIngredient(ingredient));
+    public RelayCommand<Ingredient> RemoveIngredientCommand => removeIngredientCommand ??= new(RemoveIngredient);
 
     public Recipe Recipe => recipe;
 
+    public ReadOnlyObservableCollection<Ingredient> Ingredients => ingredients;
+
+    public Ingredient[] AvailableIngredients => AllIngredients.Where(i => !ingredients.Contains(i)).ToArray();
+
+    public Ingredient? SelectedIngredientToAdd
+    {
+        get => selectedIngredientToAdd;
+        set => Set(ref selectedIngredientToAdd, value);
+    }
+
     public void Dispose() => disposables.Dispose();
+
+    private bool CanAddIngredient() => selectedIngredientToAdd.HasValue;
+
+    private void AddIngredient()
+    {
+        if (selectedIngredientToAdd is not Ingredient ingredient)
+            return;
+
+        recipe.AddIngredient(ingredient);
+        SelectedIngredientToAdd = null;
+    }
+
+    private void RemoveIngredient(Ingredient ingredient)
+    {
+        recipe.RemoveIngredient(ingredient);
+    }
 }

@@ -1,11 +1,12 @@
 using DynamicData;
+using DynamicData.Kernel;
 using RecipeBook.Recipes;
 
 namespace RecipeBook.Cart;
 
 public class GroceryCart
 {
-    private readonly SourceCache<CartEntry, Guid> entries = new(e => e.Id);
+    private readonly SourceCache<CartEntry, Guid> entries = new(e => e.Recipe.Id);
 
     public IObservable<IChangeSet<CartEntry, Guid>> ObserveEntries() => entries.Connect();
 
@@ -13,11 +14,10 @@ public class GroceryCart
 
     public void AddOrIncrement(Recipe recipe)
     {
-        var existing = entries.Lookup(recipe.Id);
-        if (existing.HasValue)
-            existing.Value.Count++;
-        else
-            entries.AddOrUpdate(new CartEntry(recipe));
+        CartEntry? entry = entries.Lookup(recipe.Id).ValueOrDefault();
+        entry ??= new CartEntry(recipe, 0);
+
+        entries.AddOrUpdate(entry with { Count = entry.Count + 1 });
     }
 
     public void Decrement(CartEntry entry)
@@ -25,11 +25,20 @@ public class GroceryCart
         if (entry.Count <= 1)
             Remove(entry);
         else
-            entry.Count--;
+            entries.AddOrUpdate(entry with { Count = entry.Count - 1 });
     }
 
     public void Remove(CartEntry entry)
     {
         entries.Remove(entry);
+    }
+
+    public IReadOnlyList<IngredientWithCount> ComputeIngredientCounts()
+    {
+        return CurrentEntries
+            .SelectMany(entry => entry.Recipe.CurrentIngredients.Select(i => new IngredientWithCount(i, entry.Count)))
+            .GroupBy(x => x.Ingredient)
+            .Select(group => new IngredientWithCount(group.Key, group.Sum(x => x.Count)))
+            .ToArray();
     }
 }

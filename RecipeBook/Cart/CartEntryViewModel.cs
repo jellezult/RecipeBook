@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.Input;
 using RecipeBook.Common;
 using RecipeBook.Recipes;
 using System.Reactive.Disposables;
@@ -20,18 +21,21 @@ public class CartEntryViewModel : NotifyObject, IDisposable
         this.cart = cart;
     }
 
-    public RelayCommand IncrementCommand =>
-        incrementCommand ??= new RelayCommand(() => cart.AddOrIncrement(entry.Recipe));
+    public RelayCommand IncrementCommand => incrementCommand ??= new(Increment);
 
-    public RelayCommand DecrementCommand =>
-        decrementCommand ??= new RelayCommand(() => cart.Decrement(entry));
+    public RelayCommand DecrementCommand => decrementCommand ??= new(Decrement);
 
-    public RelayCommand RemoveCommand =>
-        removeCommand ??= new RelayCommand(() => cart.Remove(entry));
-
-    public Recipe Recipe => entry.Recipe;
+    public RelayCommand RemoveCommand => removeCommand ??= new(Remove);
 
     public CartEntry Entry => entry;
 
+    public Recipe Recipe => entry.Recipe;
+
     public void Dispose() => disposables.Dispose();
+
+    private void Increment() => cart.AddOrIncrement(entry.Recipe);
+
+    private void Decrement() => cart.Decrement(entry);
+
+    private void Remove() => cart.Remove(entry);
 }

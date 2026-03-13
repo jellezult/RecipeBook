@@ -6,7 +6,7 @@ public class RecipeBook
 {
     private readonly SourceList<Recipe> recipes = new();
 
-    public IObservable<IChangeSet<Recipe>> ObserveRecipes() => this.recipes.Connect();
+    public IObservable<IChangeSet<Recipe>> ObserveRecipes() => recipes.Connect();
 
     public RecipeBook()
     {
@@ -34,17 +34,17 @@ public class RecipeBook
         curry.AddIngredient(Ingredient.Rice);
         curry.AddIngredient(Ingredient.Coriander);
 
-        this.recipes.AddRange(new[] { carbonara, risotto, curry });
+        recipes.AddRange(new[] { carbonara, risotto, curry });
     }
 
     public void AddRecipe(string name)
     {
         if (!string.IsNullOrWhiteSpace(name))
-            this.recipes.Add(new Recipe(name));
+            recipes.Add(new Recipe(name));
     }
 
     public void RemoveRecipe(Recipe recipe)
     {
-        this.recipes.Remove(recipe);
+        recipes.Remove(recipe);
     }
 }

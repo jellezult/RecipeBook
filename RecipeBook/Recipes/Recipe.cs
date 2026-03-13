@@ -9,8 +9,8 @@ public class Recipe
     public Guid Id { get; } = Guid.NewGuid();
     public string Name { get; }
 
-    public IObservable<IChangeSet<Ingredient>> ObserveIngredients() => this.ingredients.Connect();
-    public IReadOnlyList<Ingredient> IngredientsSnapshot => this.ingredients.Items.ToList();
+    public IObservable<IChangeSet<Ingredient>> ObserveIngredients() => ingredients.Connect();
+    public IReadOnlyList<Ingredient> CurrentIngredients => ingredients.Items.ToList();
 
     public Recipe(string name)
     {
@@ -19,12 +19,12 @@ public class Recipe
 
     public void AddIngredient(Ingredient ingredient)
     {
-        if (!this.ingredients.Items.Contains(ingredient))
-            this.ingredients.Add(ingredient);
+        if (!ingredients.Items.Contains(ingredient))
+            ingredients.Add(ingredient);
     }
 
     public void RemoveIngredient(Ingredient ingredient)
     {
-        this.ingredients.Remove(ingredient);
+        ingredients.Remove(ingredient);
     }
 }

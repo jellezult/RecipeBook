@@ -1,8 +1,8 @@
 namespace RecipeBook.Cart;
 
-public class IngredientSummaryViewModel
+public class IngredientCountViewModel
 {
-    public IngredientSummaryViewModel(string ingredientName, int totalCount)
+    public IngredientCountViewModel(string ingredientName, int totalCount)
     {
         IngredientName = ingredientName;
         TotalCount = totalCount;

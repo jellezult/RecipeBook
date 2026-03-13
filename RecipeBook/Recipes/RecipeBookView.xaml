@@ -46,7 +46,7 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Column="0"
-                                       Text="{Binding Name}"
+                                       Text="{Binding Recipe.Name}"
                                        VerticalAlignment="Center"
                                        TextTrimming="CharacterEllipsis"
                                        Margin="2,0"/>
