@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:RecipeBook.Cart"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=vm:GroceryCartViewModel}">
+             d:DataContext="{d:DesignInstance Type=vm:GroceryCartViewModel}"
+             Background="#EAFAF1">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -14,7 +15,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- Left panel: Cart items -->
-        <DockPanel Grid.Column="0" LastChildFill="True">
+        <DockPanel Grid.Column="0" LastChildFill="True" Background="#D5F5E3">
             <TextBlock DockPanel.Dock="Top"
                        Text="Grocery Cart"
                        FontWeight="Bold" FontSize="15"
@@ -75,10 +76,10 @@
             </ListBox>
         </DockPanel>
 
-        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#EEEEEE"/>
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#A9DFBF"/>
 
         <!-- Right panel: Aggregated ingredients / shopping list -->
-        <DockPanel Grid.Column="2" LastChildFill="True">
+        <DockPanel Grid.Column="2" LastChildFill="True" Background="#D5F5E3">
             <TextBlock DockPanel.Dock="Top"
                        Text="Shopping List"
                        FontWeight="Bold" FontSize="15"

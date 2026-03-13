@@ -13,13 +13,13 @@
             <ColumnDefinition Width="*" MinWidth="350"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+        <Border Grid.Column="0" BorderBrush="#5DADE2" BorderThickness="2" Margin="4" CornerRadius="4">
             <recipes:RecipeBookView x:Name="RecipeBookView"/>
         </Border>
 
         <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#DDDDDD"/>
 
-        <Border Grid.Column="2" BorderBrush="#CCCCCC" BorderThickness="1" Margin="4">
+        <Border Grid.Column="2" BorderBrush="#52BE80" BorderThickness="2" Margin="4" CornerRadius="4">
             <cart:GroceryCartView x:Name="GroceryCartView"/>
         </Border>
     </Grid>
