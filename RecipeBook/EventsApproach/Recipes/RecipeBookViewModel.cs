@@ -26,7 +26,7 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
         foreach (var recipe in recipeBook.Recipes)
             recipes.Add(new RecipeViewModel(recipe));
 
-        // Subscribe to model collection changes — analogue of .Transform().Bind().DisposeMany()
+        // Subscribe to model collection changes
         recipeBook.Recipes.CollectionChanged += OnModelRecipesChanged;
     }
 
@@ -63,20 +63,23 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
 
     private void OnModelRecipesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-            foreach (Recipe r in e.NewItems)
-                recipes.Add(new RecipeViewModel(r));
+        AppExtensions.InvokeUI(() =>
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
+                foreach (Recipe r in e.NewItems)
+                    recipes.Add(new RecipeViewModel(r));
 
-        if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-            foreach (Recipe r in e.OldItems)
-            {
-                var vm = recipes.FirstOrDefault(v => v.Recipe == r);
-                if (vm is not null)
+            if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+                foreach (Recipe r in e.OldItems)
                 {
-                    recipes.Remove(vm);
-                    vm.Dispose();
+                    var vm = recipes.FirstOrDefault(v => v.Recipe == r);
+                    if (vm is not null)
+                    {
+                        recipes.Remove(vm);
+                        vm.Dispose();
+                    }
                 }
-            }
+        });
     }
 
     private bool CanAddRecipe() => !string.IsNullOrWhiteSpace(NewRecipeName);

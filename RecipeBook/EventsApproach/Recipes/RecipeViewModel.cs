@@ -52,15 +52,18 @@ public class RecipeViewModel : NotifyObject, IDisposable
 
     private void OnModelIngredientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
-            foreach (Ingredient i in e.NewItems)
-                ingredients.Add(i);
+        AppExtensions.InvokeUI(() =>
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
+                foreach (Ingredient i in e.NewItems)
+                    ingredients.Add(i);
 
-        if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
-            foreach (Ingredient i in e.OldItems)
-                ingredients.Remove(i);
+            if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+                foreach (Ingredient i in e.OldItems)
+                    ingredients.Remove(i);
 
-        OnPropertyChanged(nameof(AvailableIngredients));
+            OnPropertyChanged(nameof(AvailableIngredients));
+        });
     }
 
     private bool CanAddIngredient() => SelectedIngredientToAdd.HasValue;
