@@ -1,8 +1,8 @@
 using DynamicData;
 using DynamicData.Kernel;
-using RecipeBook.Recipes;
+using RecipeBook.DynamicDataApproach.Recipes;
 
-namespace RecipeBook.Cart;
+namespace RecipeBook.DynamicDataApproach.Cart;
 
 public class GroceryCart
 {

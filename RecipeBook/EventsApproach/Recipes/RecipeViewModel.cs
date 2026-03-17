@@ -1,44 +1,37 @@
 using CommunityToolkit.Mvvm.Input;
-using DynamicData;
 using RecipeBook.Common;
 using System.Collections.ObjectModel;
-using System.Reactive.Disposables;
-using System.Reactive.Linq;
+using System.Collections.Specialized;
 
-namespace RecipeBook.Recipes;
+namespace RecipeBook.EventsApproach.Recipes;
 
 public class RecipeViewModel : NotifyObject, IDisposable
 {
     private static readonly IReadOnlyList<Ingredient> AllIngredients = Enum.GetValues<Ingredient>().ToList();
 
-    private readonly CompositeDisposable disposables = new();
     private readonly Recipe recipe;
-    private readonly ReadOnlyObservableCollection<Ingredient> ingredients;
+    private readonly ObservableCollection<Ingredient> ingredients = new();
 
     private Ingredient? selectedIngredientToAdd;
-
     private RelayCommand? addIngredientCommand;
-    private RelayCommand<Ingredient>? removeIngredientCommand;
 
     public RecipeViewModel(Recipe recipe)
     {
         this.recipe = recipe;
 
-        recipe.ObserveIngredients()
-            .ObserveOnDispatcher()
-            .Bind(out ingredients)
-            .Do(_ => OnPropertyChanged(nameof(AvailableIngredients)))
-            .Subscribe()
-            .DisposeWith(disposables);
+        foreach (var ingredient in recipe.Ingredients)
+            ingredients.Add(ingredient);
+
+        recipe.Ingredients.CollectionChanged += OnModelIngredientsChanged;
     }
 
     public RelayCommand AddIngredientCommand => addIngredientCommand ??= new(AddIngredient, CanAddIngredient);
 
-    public RelayCommand<Ingredient> RemoveIngredientCommand => removeIngredientCommand ??= new(RemoveIngredient);
+    public RelayCommand<Ingredient> RemoveIngredientCommand => new(RemoveIngredient);
 
     public Recipe Recipe => recipe;
 
-    public ReadOnlyObservableCollection<Ingredient> Ingredients => ingredients;
+    public ObservableCollection<Ingredient> Ingredients => ingredients;
 
     public Ingredient[] AvailableIngredients => AllIngredients.Where(i => !ingredients.Contains(i)).ToArray();
 
@@ -48,11 +41,27 @@ public class RecipeViewModel : NotifyObject, IDisposable
         set
         {
             Set(ref selectedIngredientToAdd, value);
-            AddIngredientCommand.NotifyCanExecuteChanged();
+            addIngredientCommand?.NotifyCanExecuteChanged();
         }
     }
 
-    public void Dispose() => disposables.Dispose();
+    public void Dispose()
+    {
+        recipe.Ingredients.CollectionChanged -= OnModelIngredientsChanged;
+    }
+
+    private void OnModelIngredientsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems is not null)
+            foreach (Ingredient i in e.NewItems)
+                ingredients.Add(i);
+
+        if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems is not null)
+            foreach (Ingredient i in e.OldItems)
+                ingredients.Remove(i);
+
+        OnPropertyChanged(nameof(AvailableIngredients));
+    }
 
     private bool CanAddIngredient() => SelectedIngredientToAdd.HasValue;
 

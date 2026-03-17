@@ -1,6 +1,7 @@
 using DynamicData;
+using RecipeBook.Common;
 
-namespace RecipeBook.Recipes;
+namespace RecipeBook.DynamicDataApproach.Recipes;
 
 public class Recipe
 {

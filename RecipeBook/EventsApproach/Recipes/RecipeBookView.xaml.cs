@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace RecipeBook.Recipes;
+namespace RecipeBook.EventsApproach.Recipes;
 
 public partial class RecipeBookView : UserControl
 {

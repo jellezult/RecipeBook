@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
 using RecipeBook.Common;
-using RecipeBook.Recipes;
+using RecipeBook.DynamicDataApproach.Recipes;
 using System.Reactive.Disposables;
 
-namespace RecipeBook.Cart;
+namespace RecipeBook.DynamicDataApproach.Cart;
 
 public class CartEntryViewModel : NotifyObject, IDisposable
 {
@@ -11,21 +11,17 @@ public class CartEntryViewModel : NotifyObject, IDisposable
     private readonly CartEntry entry;
     private readonly GroceryCart cart;
 
-    private RelayCommand? incrementCommand;
-    private RelayCommand? decrementCommand;
-    private RelayCommand? removeCommand;
-
     public CartEntryViewModel(CartEntry entry, GroceryCart cart)
     {
         this.entry = entry;
         this.cart = cart;
     }
 
-    public RelayCommand IncrementCommand => incrementCommand ??= new(Increment);
+    public RelayCommand IncrementCommand => new(Increment);
 
-    public RelayCommand DecrementCommand => decrementCommand ??= new(Decrement);
+    public RelayCommand DecrementCommand => new(Decrement);
 
-    public RelayCommand RemoveCommand => removeCommand ??= new(Remove);
+    public RelayCommand RemoveCommand => new(Remove);
 
     public CartEntry Entry => entry;
 

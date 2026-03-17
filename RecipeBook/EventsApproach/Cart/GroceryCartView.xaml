@@ -1,0 +1,114 @@
+<UserControl x:Class="RecipeBook.EventsApproach.Cart.GroceryCartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:RecipeBook.EventsApproach.Cart"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=vm:GroceryCartViewModel}"
+             Background="#EAFAF1">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="190" MinWidth="140"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left panel: Cart items -->
+        <DockPanel Grid.Column="0" LastChildFill="True" Background="#D5F5E3">
+            <TextBlock DockPanel.Dock="Top"
+                       Text="Grocery Cart"
+                       FontWeight="Bold" FontSize="15"
+                       Margin="6,6,6,4"/>
+
+            <ListBox ItemsSource="{Binding CartEntries}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:CartEntryViewModel}">
+                        <Grid Margin="0,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding Recipe.Name}"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       Margin="2,0"/>
+
+                            <!-- Count display -->
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Entry.Count, StringFormat='×{0}'}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       FontWeight="SemiBold"/>
+
+                            <!-- Decrement -->
+                            <Button Grid.Column="2"
+                                    Content="−"
+                                    FontSize="14"
+                                    Width="28"
+                                    ToolTip="Decrease amount"
+                                    Command="{Binding DecrementCommand}"/>
+
+                            <!-- Increment -->
+                            <Button Grid.Column="3"
+                                    Content="+"
+                                    FontSize="14"
+                                    Width="28"
+                                    ToolTip="Increase amount"
+                                    Command="{Binding IncrementCommand}"/>
+
+                            <!-- Remove from cart -->
+                            <Button Grid.Column="4"
+                                    Content="✕"
+                                    Foreground="DarkRed"
+                                    ToolTip="Remove from cart"
+                                    Command="{Binding RemoveCommand}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="#A9DFBF"/>
+
+        <!-- Right panel: Aggregated ingredients / shopping list -->
+        <DockPanel Grid.Column="2" LastChildFill="True" Background="#D5F5E3">
+            <TextBlock DockPanel.Dock="Top"
+                       Text="Shopping List"
+                       FontWeight="Bold" FontSize="15"
+                       Margin="6,6,6,4"/>
+
+            <ListBox ItemsSource="{Binding IngredientCounts}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:IngredientCountViewModel}">
+                        <Grid Margin="2,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0"
+                                       Text="{Binding IngredientName}"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalCount, StringFormat='×{0}'}"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Bold"
+                                       Margin="8,0,2,0"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</UserControl>

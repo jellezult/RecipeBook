@@ -1,4 +1,4 @@
-namespace RecipeBook.Recipes;
+namespace RecipeBook.Common;
 
 public enum Ingredient
 {

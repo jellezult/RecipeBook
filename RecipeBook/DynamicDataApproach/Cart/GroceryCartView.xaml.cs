@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace RecipeBook.Cart;
+namespace RecipeBook.DynamicDataApproach.Cart;
 
 public partial class GroceryCartView : UserControl
 {

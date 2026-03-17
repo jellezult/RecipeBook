@@ -1,4 +1,4 @@
-namespace RecipeBook.Cart;
+namespace RecipeBook.EventsApproach.Cart;
 
 public class IngredientCountViewModel
 {

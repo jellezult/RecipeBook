@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace RecipeBook.Cart;
+namespace RecipeBook.DynamicDataApproach.Cart;
 
 public class GroceryCartViewModel : NotifyObject, IDisposable
 {
@@ -28,7 +28,7 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
             .Subscribe() // activates the subscription
             .DisposeWith(disposables); // useful pattern if we want to dispose all subscriptions later
 
-        // Observe the backend CardEntry collection, and the its nested ingredient lists
+        // Observe the backend CartEntry collection, and its nested ingredient lists
         // -> trigger a recomputation of the ingredients summary on each relevant change:
         //      -> Change of Recipes in Cart (=CartEntry collection) should trigger a recompute
         //      -> Change of Ingredient collection in a Recipe should trigger a recompute if that Recipe is in the Cart
@@ -50,7 +50,7 @@ public class GroceryCartViewModel : NotifyObject, IDisposable
 
     public void Dispose() => disposables.Dispose();
 
-    private void RecomputeIngredientsSummary(IChangeSet<Recipes.Ingredient> set)
+    private void RecomputeIngredientsSummary(IChangeSet<Ingredient> set)
     {
         // In this case we don't use the change-set itself since we just do a full recomputation.
         // In alternative scenarios the change-set could be used for more custom fine-grained updating.

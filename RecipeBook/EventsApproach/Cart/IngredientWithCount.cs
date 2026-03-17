@@ -1,5 +1,5 @@
-using RecipeBook.Recipes;
+using RecipeBook.Common;
 
-namespace RecipeBook.Cart;
+namespace RecipeBook.EventsApproach.Cart;
 
 public readonly record struct IngredientWithCount(Ingredient Ingredient, int Count);

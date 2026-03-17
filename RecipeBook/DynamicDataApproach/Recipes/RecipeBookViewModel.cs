@@ -1,12 +1,12 @@
 using CommunityToolkit.Mvvm.Input;
 using DynamicData;
-using RecipeBook.Cart;
 using RecipeBook.Common;
+using RecipeBook.DynamicDataApproach.Cart;
 using System.Collections.ObjectModel;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace RecipeBook.Recipes;
+namespace RecipeBook.DynamicDataApproach.Recipes;
 
 public class RecipeBookViewModel : NotifyObject, IDisposable
 {
@@ -19,8 +19,6 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
     private string newRecipeName = string.Empty;
 
     private RelayCommand? addRecipeCommand;
-    private RelayCommand<RecipeViewModel>? removeRecipeCommand;
-    private RelayCommand<RecipeViewModel>? addToCartCommand;
 
     public RecipeBookViewModel(RecipeBook recipeBook, GroceryCart groceryCart)
     {
@@ -40,9 +38,9 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
 
     public RelayCommand AddRecipeCommand => addRecipeCommand ??= new(AddRecipe, CanAddRecipe);
 
-    public RelayCommand<RecipeViewModel> RemoveRecipeCommand => removeRecipeCommand ??= new(RemoveRecipe);
+    public RelayCommand<RecipeViewModel> RemoveRecipeCommand => new(RemoveRecipe);
 
-    public RelayCommand<RecipeViewModel> AddToCartCommand => addToCartCommand ??= new(AddToCart);
+    public RelayCommand<RecipeViewModel> AddToCartCommand => new(AddToCart);
 
     public ReadOnlyObservableCollection<RecipeViewModel> Recipes => recipes;
 
@@ -58,7 +56,7 @@ public class RecipeBookViewModel : NotifyObject, IDisposable
         set
         {
             Set(ref newRecipeName, value);
-            AddRecipeCommand.NotifyCanExecuteChanged();
+            addRecipeCommand?.NotifyCanExecuteChanged();
         }
     }
 
